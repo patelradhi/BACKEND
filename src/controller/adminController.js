@@ -3,6 +3,10 @@ let user = db.User;
 const uuid = require("uuid");
 const bcrypt = require("bcrypt");
 const { where } = require("sequelize");
+const { use } = require("../routes/router");
+const jwt = require("jsonwebtoken")
+require('dotenv').config()
+
 
 //....................................... Create user ............................................./
 
@@ -67,6 +71,106 @@ exports.createUser = async (req, res) => {
     });
   }
 };
+
+
+//.........................................user login................................................................/
+
+exports.login = async(req,res)=>{
+  try {
+
+    //destructure email and password
+
+    const {Email,Password} = req.body
+
+    //validation
+
+    if(!Email || !Password){
+      return res.status(401).json({
+        success:false,
+        message : "Required all feild"
+
+      })
+    }
+
+    //check exist user
+
+
+
+    const existUser = await user.findOne({where:{
+      Email:Email
+    }})
+
+    if(!existUser){
+      return res.json({
+        success:false,
+        message:"User not exist"
+      })
+
+    }
+
+
+   //password check
+
+   const checkPassword = await bcrypt.compare(Password,existUser.Password)
+
+   if(!checkPassword){
+     return res.json({
+      success:false,
+      message:"Password does not matched"
+
+    })
+   }
+
+
+//if password matched then generate token and sent into cookie
+
+if (checkPassword) {
+  const payload = {
+    email: existUser.Email,
+    id: existUser.Id,
+    role:existUser.Role
+
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+    expiresIn: '3h',
+  });
+
+   //token send into cookie and res
+
+   let Options = {
+    expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+  };
+
+  //response
+
+  const ans = await user.findOne({where:{
+    Email:Email
+  },attributes: ['Email','Name']})
+
+  res.status(200)
+				.cookie('token', token, Options)
+				.json({
+					status: 'success',
+					message: 'User logged in successfully',
+					data: {
+						...ans._doc,
+						token,
+					},
+				});
+   
+} 
+}catch (error) {
+    console.log(error)
+    
+  }
+}
+  
+
+
+
+
 
 //........................................update user......................................................./
 
