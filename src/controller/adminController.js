@@ -80,11 +80,11 @@ exports.login = async(req,res)=>{
 
     //destructure email and password
 
-    const {Email,Password} = req.body
+    const {email,password} = req.query;
 
     //validation
 
-    if(!Email || !Password){
+    if(!email || !password){
       return res.status(401).json({
         success:false,
         message : "Required all feild"
@@ -97,7 +97,7 @@ exports.login = async(req,res)=>{
 
 
     const existUser = await user.findOne({where:{
-      Email:Email
+      Email:email
     }})
 
     if(!existUser){
@@ -111,7 +111,7 @@ exports.login = async(req,res)=>{
 
    //password check
 
-   const checkPassword = await bcrypt.compare(Password,existUser.Password)
+   const checkPassword = await bcrypt.compare(password,existUser.Password)
 
    if(!checkPassword){
      return res.json({
@@ -145,9 +145,7 @@ if (checkPassword) {
 
   //response
 
-  const ans = await user.findOne({where:{
-    Email:Email
-  },attributes: ['Email','Name']})
+
 
   res.status(200)
 				.cookie('token', token, Options)
@@ -155,12 +153,14 @@ if (checkPassword) {
 					status: 'success',
 					message: 'User logged in successfully',
 					data: {
-						...ans._doc,
+						existUser,
 						token,
 					},
 				});
    
 } 
+console.log(data,"/////////data")
+
 }catch (error) {
     console.log(error)
     

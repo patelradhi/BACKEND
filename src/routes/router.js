@@ -13,7 +13,7 @@ router.get("/get/user",fetchUsersList)
 router.get("/get/user/:Id",fetchUsersListById)
 router.put("/update/user",updateUser,)
 router.delete("/delete/user/:id",deleteUser)
-router.post("/login",login)
+router.get("/login",login)
 
 
 //exports
