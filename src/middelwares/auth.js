@@ -1,4 +1,3 @@
-
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -9,6 +8,8 @@ exports.auth = async (req, res, next) => {
 		// destructured token from req.cookie
 
 		const { token } = req.cookies;
+
+		console.log('tokennnnnnnnnnnn ///////////////////', token);
 
 		//validation
 
@@ -21,6 +22,8 @@ exports.auth = async (req, res, next) => {
 
 		try {
 			const decode = await jwt.decode(token, process.env.JWT_SECRET_KEY);
+
+			console.log(decode, 'decode');
 
 			req.user = decode;
 		} catch (error) {
@@ -40,26 +43,21 @@ exports.auth = async (req, res, next) => {
 	}
 };
 
-
-
 //..........................is user ............................/
 
-exports.isUser = async(req,res,next)=>{
-    try {
-        if(req.user.role == !0 ){
-
-            //response
-            return res.json({
-                message:"You can not access this resource"
-            })
-
-         }
-         next()
-} catch (error) {
-        console.log(error)
-        
-    }
-}
+exports.isUser = async (req, res, next) => {
+	try {
+		if (req.user.role == !0) {
+			//response
+			return res.json({
+				message: 'You can not access this resource',
+			});
+		}
+		next();
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 //...................................... is admin ..................................../
 
