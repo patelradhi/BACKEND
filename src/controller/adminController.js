@@ -122,8 +122,7 @@ exports.login = async(req,res)=>{
    }
 
 
-//if password matched then generate token and sent into cookie
-
+//if password matched then generate token 
 if (checkPassword) {
   const payload = {
     email: existUser.Email,
@@ -136,19 +135,18 @@ if (checkPassword) {
     expiresIn: '3h',
   });
 
-   //token send into cookie and res
 
-   let Options = {
-    expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
+  // set token in headers
+  // res.setHeader("x-access-token", token);
+
+
+
 
   //response
 
-
+  console.log("this is token ----------->",token);
 
   res.status(200)
-				.cookie('token', token, Options)
 				.json({
 					status: 'success',
 					message: 'User logged in successfully',
@@ -159,7 +157,6 @@ if (checkPassword) {
 				});
    
 } 
-console.log(data,"/////////data")
 
 }catch (error) {
     console.log(error)

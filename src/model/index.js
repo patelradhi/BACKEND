@@ -23,6 +23,8 @@ db.Sequelize = Sequelize
 db.sequelize = sequelize
 
 db["User"] = require("./user")(sequelize,DataTypes)
+db['Product'] = require('./product')(sequelize, DataTypes);
+db['Batch'] = require('./batch')(sequelize, DataTypes);
 
 
 module.exports = db

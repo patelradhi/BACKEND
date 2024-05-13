@@ -8,7 +8,8 @@ exports.auth = async (req, res, next) => {
 	try {
 		// destructured token from req.cookie
 
-		const { token } = req.cookies;
+		const token = req.headers['x-access-token']
+				console.log(token,"tokennnnnnnnnnnnnnnnnnn")
 
 		//validation
 
@@ -20,9 +21,14 @@ exports.auth = async (req, res, next) => {
 		}
 
 		try {
-			const decode = await jwt.decode(token, process.env.JWT_SECRET_KEY);
+			const decode = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+			console.log("Decode" ,decode , "]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
 
 			req.user = decode;
+
+			next();
+
 		} catch (error) {
 			console.log(error);
 			res.json({
@@ -30,7 +36,6 @@ exports.auth = async (req, res, next) => {
 			});
 		}
 
-		next();
 	} catch (error) {
 		console.log(error);
 		res.json({
@@ -47,6 +52,8 @@ exports.auth = async (req, res, next) => {
 exports.isUser = async(req,res,next)=>{
     try {
         if(req.user.role == !0 ){
+
+			console.log(req.user.role , "/////////////////////////////////////////////")
 
             //response
             return res.json({
@@ -66,6 +73,10 @@ exports.isUser = async(req,res,next)=>{
 exports.isAdmin = async (req, res, next) => {
 	try {
 		if (req.user.role !== 1) {
+			console.log(req.user ,";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	")
+
+			console.log(req.user.role , "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
 			return res.json({
 				success: false,
 				message: 'You can not access this resource',
@@ -73,7 +84,7 @@ exports.isAdmin = async (req, res, next) => {
 		}
 		next();
 	} catch (error) {
-		consolelog(error);
+		console.log(error);
 		res.json({
 			success: false,
 			message: 'Found some error while  check role of admin',
